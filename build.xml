@@ -1,0 +1,130 @@
+<!-- Copyright 2011 Demetrios Papadopoulos
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<project name="smart-cli-parser" basedir="." default="main">
+
+  <property name="src.dir"               value="src"/>
+  <property name="build.dir"             value="bin"/>
+  <property name="lib.dir"               value="lib"/>
+  <property name="resources.dir"         value="resources"/>
+  <property name="tests.src.dir"         value="tests"/>
+
+  <property name="classes.dir"           value="${build.dir}/classes"/>
+  <property name="jar.dir"               value="${build.dir}/jar"/>
+  <property name="tests.dir"             value="${build.dir}/tests"/>
+
+  <property name="tests.classes.dir"     value="${tests.dir}/classes"/>
+  <property name="tests.resources.dir"   value="${tests.classes.dir}/resources"/>
+  <property name="tests.reports.dir"     value="${tests.dir}/reports"/>
+
+
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="**/*.jar"/>
+  </path>
+
+  <path id="application" location="${jar.dir}/${ant.project.name}.jar"/>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${src.dir}" destdir="${classes.dir}"
+        includeantruntime="true">
+      <classpath>
+        <path refid="classpath"/>
+      </classpath>
+    </javac>
+    <copy todir="${classes.dir}">
+      <fileset dir="${src.dir}" excludes="**/*.java"/>
+    </copy>
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="${jar.dir}"/>
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" 
+         basedir="${classes.dir}"></jar>
+  </target>
+
+  <target name="run" depends="jar">
+    <java fork="true" classname="${main-class}">
+      <classpath>
+        <path refid="application"/>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="compile_tests" depends="compile">
+    <mkdir dir="${tests.classes.dir}"/>
+    <javac srcdir="${tests.src.dir}"
+           destdir="${tests.classes.dir}"
+           includeantruntime="true">
+      <classpath>
+        <path location="${classes.dir}"/>
+        <path refid="classpath"/>
+      </classpath>
+    </javac>
+    <copy todir="${tests.resources.dir}">
+      <fileset dir="${resources.dir}"/>
+    </copy>
+  </target>
+
+  <target name="junit" depends="compile_tests">
+    <junit printsummary="no">
+      <classpath>
+        <path location="${classes.dir}"/>
+        <path location="${tests.classes.dir}"/>
+        <path refid="classpath"/>
+      </classpath>
+      <formatter type="plain" usefile="false"/>
+      <batchtest fork="yes">
+        <fileset dir="${tests.src.dir}" includes="**/*Test.java"/>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="junit_jar" depends="compile_tests, jar">
+    <junit printsummary="no">
+      <classpath>
+        <path location="${classes.dir}"/>
+        <path location="${tests.classes.dir}"/>
+        <path refid="classpath"/>
+      </classpath>
+      <formatter type="plain" usefile="false"/>
+      <batchtest fork="yes">
+        <fileset dir="${tests.src.dir}" includes="**/*Test.java"/>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="ensure-test-name" unless="test">
+    <fail message="You must run this target with -Dtest=TestName"/>
+  </target>
+
+  <target name="runtest" description="Runs the test you specify on the command 
+      line with -Dtest=" depends="compile_tests, ensure-test-name">
+    <junit printsummary="no"> 
+      <classpath>
+        <path location="${classes.dir}"/>
+        <path location="${tests.classes.dir}"/>
+        <path refid="classpath"/>
+      </classpath>
+      <formatter type="plain" usefile="false"/>
+      <batchtest fork="yes">
+        <fileset dir="${tests.src.dir}" includes="**/${test}.java"/>
+      </batchtest>
+    </junit>
+  </target>
+</project>
