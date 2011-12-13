@@ -15,13 +15,16 @@
 package org.smartcliparser;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 // A class representing a flag that of a command line program.
 public class Flag {
+
+  // Convenience alias for (seemingly) unlimited number of args.
+  public static int UNLIMITED_NUM_OF_ARGS = Integer.MAX_VALUE;
 
   /**
    * A list of all names for this flag.

@@ -14,8 +14,6 @@
 */
 package org.smartcliparser;
 
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -41,12 +39,15 @@ public class CommandLineProgramTest {
     }
 
     public void initialize() {
-      Flag f1 = new Flag(Arrays.asList(new String[]{ "output", "o" }), true, 1, 1);
-      Flag f2 = new Flag(Arrays.asList(new String[]{ "input", "i" }), true, 1, 2);
-      Flag f3 = new Flag(Arrays.asList(new String[]{ "compress", "c" }), false, 0, 0);
+      Flag f1 = new Flag(new String[]{ "output", "o" }, true, 1, 1);
+      Flag f2 = new Flag(new String[]{ "input", "i" }, true, 1, 2);
+      Flag f3 = new Flag(new String[]{ "compress", "c" }, false, 0, 0);
+      Flag f4 = new Flag(new String[]{ "filter", "f" }, false, 0,
+                         Flag.UNLIMITED_NUM_OF_ARGS);
       registerFlag(f1);
       registerFlag(f2);
       registerFlag(f3);
+      registerFlag(f4);
     }
 
     public void run() {
@@ -63,6 +64,7 @@ public class CommandLineProgramTest {
     program.initialize();
   }
 
+  // TODO(dpapad): Add expectation for the args of each individual flag.
   @Test
   public void testHasFlag() {
     assertTrue(program.hasFlag("output"));
@@ -120,6 +122,17 @@ public class CommandLineProgramTest {
     program.setUnconsumedFlags(2, 2);
     assertTrue(program.parseArgs(args));
     assertEquals(0, program.args.size());
+  }
+
+  @Test
+  public void testParseArgsUnlimitedSuccess() {
+    String[] args = new String[]{ "--output", "log.txt",
+                                 "-i", "input1.txt", "input2.txt",
+                                 "--filter", "f1", "f2", "f3", "f4", "f5" };
+    assertTrue(program.parseArgs(args));
+    assertEquals(0, program.args.size());
+    Flag filterFlag = program.flagsMap.get("filter");
+    assertEquals(5, filterFlag.args.size());
   }
 
   @Test
