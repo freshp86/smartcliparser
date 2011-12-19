@@ -70,6 +70,10 @@ public class Flag {
     this.args = new LinkedList<String>();
   }
 
+  public boolean isSet() {
+    return this.isSet;
+  }
+
   /**
    * Sets the maximum/minumum allowable number of args for this flag.
    */
