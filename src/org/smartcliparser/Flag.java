@@ -48,24 +48,44 @@ public class Flag {
   private boolean isSet;
 
   /**
+   * If true, |numOfArgsMax| is ignored while consuming args. It is still taken
+   * into account when determining whether parsing succeeded.
+   */
+  private boolean forceConsume;
+
+  /**
    * A list of all arguments that were consumed by this flag.
    */
   public List<String> args;
 
+  public List<ParsingError> errors;
+
   public Flag() {
-    this(new LinkedList<String>(), false, 0, 0);
+    this(new LinkedList<String>(), false, 0, 0, false);
+  }
+
+  public Flag(String name) {
+    this(new LinkedList<String>(), false, 0, 0, false);
+    this.registerName(name);
   }
 
   public Flag(String[] names, boolean isRequired, int numOfArgsMin,
       int numOfArgsMax) {
-    this(Arrays.asList(names), isRequired, numOfArgsMin, numOfArgsMax);
+    this(Arrays.asList(names), isRequired, numOfArgsMin, numOfArgsMax, false);
+  }
+
+  public Flag(String[] names, boolean isRequired, int numOfArgsMin,
+      int numOfArgsMax, boolean forceConsume) {
+    this(Arrays.asList(names), isRequired, numOfArgsMin, numOfArgsMax,
+         forceConsume);
   }
 
   public Flag(List<String> names, boolean isRequired, int numOfArgsMin,
-      int numOfArgsMax) {
+      int numOfArgsMax, boolean forceConsume) {
     this.names = names;
     this.isRequired = isRequired;
     this.setNumOfArgs(numOfArgsMin, numOfArgsMax);
+    this.forceConsume = forceConsume;
     this.isSet = false;
     this.args = new LinkedList<String>();
   }
@@ -128,7 +148,8 @@ public class Flag {
     this.isSet = true;
     while (it.hasNext()) {
       String arg = it.next();
-      if (!Flag.isFlagLike(arg) && this.args.size() < this.numOfArgsMax) {
+      if (!Flag.isFlagLike(arg) &&
+         (this.forceConsume || this.args.size() < this.numOfArgsMax)) {
         it.remove();
         this.args.add(arg);
       } else {
@@ -148,6 +169,23 @@ public class Flag {
   public boolean isValid() {
     return (this.isSet && args.size() >= this.numOfArgsMin &&
          args.size() <= this.numOfArgsMax) || (!this.isSet && !this.isRequired);
+  }
+
+  public List<ParsingError> getErrors() {
+    errors = new LinkedList<ParsingError>();
+    if (this.isSet) {
+      if (args.size() < this.numOfArgsMin) {
+        errors.add(new ParsingError(
+            ParsingError.Type.MIN_NUMBER_OF_ARGS_VIOLATION, this));
+      } else if (args.size() > this.numOfArgsMax) {
+        errors.add(new ParsingError(
+            ParsingError.Type.MAX_NUMBER_OF_ARGS_VIOLATION, this));
+      }
+    } else if (this.isRequired) {
+        errors.add(new ParsingError(
+            ParsingError.Type.REQUIRED_FLAG_NOT_SET, this));
+    }
+    return errors;
   }
 
   /**

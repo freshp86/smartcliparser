@@ -14,13 +14,15 @@
 */
 package org.smartcliparser;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Arrays;
-import java.util.List;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * An abstract base class to be extended by coomand line programs.
@@ -31,6 +33,8 @@ public abstract class CommandLineProgram {
    * A mapping of flag names to Flag objects.
    */
   public Map<String, Flag> flagsMap;
+
+  public Set<Flag> flags;
 
   /**
    * A special flag used for managing unconsumed arguments.
@@ -43,11 +47,18 @@ public abstract class CommandLineProgram {
   public List<String> args;
 
   /**
+   * A list of all the errors that occured while parsing.
+   */
+  public List<ParsingError> errors;
+
+  /**
    * Creates an instance without parsing any args.
    */
   public CommandLineProgram() {
+    this.flags = new HashSet<Flag>();
     this.flagsMap = new HashMap<String, Flag>();
-    this.unconsumed = new Flag(new String[]{ "unconsumed" }, false, 0, 0);
+    this.unconsumed = new Flag(new String[]{ "unconsumed" }, false, 0, 0, true);
+    this.registerFlag(this.unconsumed);
   }
 
   /**
@@ -58,9 +69,34 @@ public abstract class CommandLineProgram {
     initialize();
     if (!parseArgs(args)) {
       System.out.println("Invalid use, see --help");
+      detectErrors();
+      printErrors();
       System.exit(1);
+    } else {
+      run();
     }
-    run();
+  }
+
+  public void detectErrors() {
+    errors = new LinkedList<ParsingError>();
+    Iterator<Flag> it = this.flags.iterator();
+    while (it.hasNext())
+      errors.addAll(it.next().getErrors());
+
+    ListIterator<String> itArgs = this.args.listIterator();
+    while (itArgs.hasNext()) {
+      String arg = itArgs.next();
+      if (Flag.isFlagLike(arg) && !hasFlag(Flag.extractName(arg))) {
+      errors.add(new ParsingError(ParsingError.Type.UNKNOWN_FLAG, arg));
+      }
+    }
+  }
+
+  public void printErrors() {
+    Iterator<ParsingError> errorsIterator = errors.iterator();
+    while (errorsIterator.hasNext()) {
+      System.out.println(errorsIterator.next().toString());
+    }
   }
 
   /**
@@ -85,6 +121,8 @@ public abstract class CommandLineProgram {
    * @param flag The flag to register.
    */
   public void registerFlag(Flag flag) {
+    if (!this.flags.add(flag))
+      return;
     List<String> names = flag.getNames();
     Iterator<String> it = names.iterator();
     while (it.hasNext())
@@ -119,6 +157,7 @@ public abstract class CommandLineProgram {
     itArgs = this.args.listIterator();
     if (itArgs.hasNext())
       this.unconsumed.consume(this.args, itArgs);
+    // TODO: consume again here until only uknown flags exist in this.args.
 
     return isParsingValid();
   }
@@ -129,7 +168,7 @@ public abstract class CommandLineProgram {
    * @return True if parsing was valid.
    */
   public boolean isParsingValid() {
-    Iterator<Flag> it = this.flagsMap.values().iterator();
+    Iterator<Flag> it = this.flags.iterator();
     while (it.hasNext()) {
       if (!it.next().isValid())
         return false;
@@ -149,7 +188,7 @@ public abstract class CommandLineProgram {
    * Clears all parsed data.
    */
   public void clear() {
-    Iterator<Flag> it = this.flagsMap.values().iterator();
+    Iterator<Flag> it = this.flags.iterator();
     while (it.hasNext())
       it.next().args.clear();
     this.args.clear();

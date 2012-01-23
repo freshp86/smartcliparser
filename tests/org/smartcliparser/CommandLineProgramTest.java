@@ -99,17 +99,26 @@ public class CommandLineProgramTest {
                                  "-i", "input1.txt", "input2.txt",
                                  "-c" };
     assertFalse(program.parseArgs(args));
-    assertEquals(1, program.args.size());
+    assertEquals(0, program.args.size());
   }
 
   @Test
   public void testParseArgsUnconsumedFail2() {
     String[] args = new String[]{ "--output", "log.txt", "unconsumed1.txt",
                                  "-i", "input1.txt",
-                                 "-u", "unknown_arg" };
+                                 "-u", "unconsumed2.txt" };
     // TODO: -u stops the unconsumed args to be consumed by this.unconsumed flag
-    // decide if this is alright.
+    // decide if this is alright. Decision:No. Fix this.
     program.setUnconsumedFlags(0, 2);
+    assertFalse(program.parseArgs(args));
+    assertEquals(2, program.args.size());
+  }
+
+  @Test
+  public void testParseArgsUnconsumedFail3() {
+    String[] args = { "--output", "log.txt",
+                      "-i", "input1.txt", "input2.txt",
+                      "-c", "-n", "--no-such-flag" };
     assertFalse(program.parseArgs(args));
     assertEquals(2, program.args.size());
   }
@@ -152,7 +161,7 @@ public class CommandLineProgramTest {
     // TODO(dpapad) Find how to test a function that calls System.exit.
     //SampleProgram program3 = new SampleProgram(args);
     // JVM is shutting down and ant reports failure.
-    //assertFalse(program2.success);
+    //assertFalse(program3.success);
   }
 
 }  // class CommandLineProgramTest
