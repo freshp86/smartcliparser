@@ -136,8 +136,8 @@ public abstract class CommandLineProgram {
     }
 
     // Checking if the number of unconsumed flags is as expected. All
-    // unconsumed args should have been consumed by this.consumed and this.args
-    // should be empty.
+    // unconsumed args should have been consumed by |this.unconsumed| and
+    // |this.args| should be empty.
     if (this.args.size() > 0 || !this.unconsumed.isValid())
       return false;
 
