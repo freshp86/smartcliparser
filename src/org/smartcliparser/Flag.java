@@ -94,6 +94,14 @@ public class Flag {
     return this.isSet;
   }
 
+  public int getNumOfArgsMin() {
+    return this.numOfArgsMin;
+  }
+
+  public int getNumOfArgsMax() {
+    return this.numOfArgsMax;
+  }
+
   /**
    * Sets the maximum/minumum allowable number of args for this flag.
    */

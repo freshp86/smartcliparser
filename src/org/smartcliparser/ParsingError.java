@@ -37,7 +37,23 @@ public class ParsingError {
   }
 
   public String toString() {
-    return this.flag.getNames().get(0) + ": " + this.type.toString();
+    return this.flag.getNames().get(0) + ": " + this.type.toString() + ": " +
+     this.getDescription();
+  }
+
+  public String getDescription() {
+    if (this.type == Type.MIN_NUMBER_OF_ARGS_VIOLATION) {
+      return "Expected at least " + flag.getNumOfArgsMin() +
+          " arguments, but got " + flag.args.size();
+    } else if (this.type == Type.MAX_NUMBER_OF_ARGS_VIOLATION) {
+      return "Expected at most " + flag.getNumOfArgsMax() +
+          " arguments, but got " + flag.args.size();
+    } else if (this.type == Type.REQUIRED_FLAG_NOT_SET) {
+      return "Required flag " + flag.getNames().get(0) + " was not set.";
+    } else if (this.type == Type.UNKNOWN_FLAG) {
+      return "Flag " + flag.getNames().get(0) + " does not exist.";
+    }
+    return "";
   }
 
 }  // class ParsingError
