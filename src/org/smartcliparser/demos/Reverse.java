@@ -15,6 +15,7 @@ public class Reverse extends CommandLineProgram {
     super(args);
   }
 
+  @Override
   public void initialize() {
     // Specifying flags.
     inputFlag = new Flag(new String[]{ "input", "i" }, true, 1,
@@ -28,6 +29,7 @@ public class Reverse extends CommandLineProgram {
     registerFlag(lowercaseFlag);
   }
 
+  @Override
   public void run() {
     Iterator<String> it = inputFlag.args.iterator();
     while (it.hasNext()) {
