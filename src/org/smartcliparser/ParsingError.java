@@ -38,7 +38,7 @@ public class ParsingError {
 
   public String toString() {
     return this.flag.getNames().get(0) + ": " + this.type.toString() + ": " +
-     this.getDescription();
+        this.getDescription();
   }
 
   public String getDescription() {

@@ -116,7 +116,7 @@ public class Flag {
    * @param name The name to register.
    */
   public void registerName(String name) {
-    names.add(name);
+    this.names.add(name);
   }
 
   /**
@@ -130,7 +130,7 @@ public class Flag {
    * @return True if name is registered as a valid name.
    */
   public boolean hasName(String name) {
-    Iterator<String> it = names.iterator();
+    Iterator<String> it = this.names.iterator();
     while (it.hasNext()) {
       if (it.next().equals(name))
         return true;
@@ -175,25 +175,26 @@ public class Flag {
    *     2) The flag was not invoked and it is not required.
    */
   public boolean isValid() {
-    return (this.isSet && args.size() >= this.numOfArgsMin &&
-         args.size() <= this.numOfArgsMax) || (!this.isSet && !this.isRequired);
+    return (this.isSet && this.args.size() >= this.numOfArgsMin &&
+        this.args.size() <= this.numOfArgsMax) ||
+        (!this.isSet && !this.isRequired);
   }
 
   public List<ParsingError> getErrors() {
-    errors = new LinkedList<ParsingError>();
+    this.errors = new LinkedList<ParsingError>();
     if (this.isSet) {
-      if (args.size() < this.numOfArgsMin) {
-        errors.add(new ParsingError(
+      if (this.args.size() < this.numOfArgsMin) {
+        this.errors.add(new ParsingError(
             ParsingError.Type.MIN_NUMBER_OF_ARGS_VIOLATION, this));
       } else if (args.size() > this.numOfArgsMax) {
-        errors.add(new ParsingError(
+        this.errors.add(new ParsingError(
             ParsingError.Type.MAX_NUMBER_OF_ARGS_VIOLATION, this));
       }
     } else if (this.isRequired) {
-        errors.add(new ParsingError(
+        this.errors.add(new ParsingError(
             ParsingError.Type.REQUIRED_FLAG_NOT_SET, this));
     }
-    return errors;
+    return this.errors;
   }
 
   /**

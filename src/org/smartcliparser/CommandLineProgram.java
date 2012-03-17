@@ -78,22 +78,22 @@ public abstract class CommandLineProgram {
   }
 
   public void detectErrors() {
-    errors = new LinkedList<ParsingError>();
+    this.errors = new LinkedList<ParsingError>();
     Iterator<Flag> it = this.flags.iterator();
     while (it.hasNext())
-      errors.addAll(it.next().getErrors());
+      this.errors.addAll(it.next().getErrors());
 
     ListIterator<String> itArgs = this.args.listIterator();
     while (itArgs.hasNext()) {
       String arg = itArgs.next();
       if (Flag.isFlagLike(arg) && !hasFlag(Flag.extractName(arg))) {
-      errors.add(new ParsingError(ParsingError.Type.UNKNOWN_FLAG, arg));
+        this.errors.add(new ParsingError(ParsingError.Type.UNKNOWN_FLAG, arg));
       }
     }
   }
 
   public void printErrors() {
-    Iterator<ParsingError> errorsIterator = errors.iterator();
+    Iterator<ParsingError> errorsIterator = this.errors.iterator();
     while (errorsIterator.hasNext()) {
       System.out.println(errorsIterator.next().toString());
     }
@@ -126,7 +126,7 @@ public abstract class CommandLineProgram {
     List<String> names = flag.getNames();
     Iterator<String> it = names.iterator();
     while (it.hasNext())
-      flagsMap.put(it.next(), flag);
+      this.flagsMap.put(it.next(), flag);
   }
 
   /**
