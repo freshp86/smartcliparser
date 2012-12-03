@@ -127,6 +127,8 @@ public class Flag {
   }
 
   /**
+   * Checks if the given name is registered.
+   * @param name The name to check.
    * @return True if name is registered as a valid name.
    */
   public boolean hasName(String name) {
@@ -206,8 +208,8 @@ public class Flag {
    * @return True if the string looks like a flag.
    */
   public static boolean isFlagLike(String string) {
-    return string.length() >= 2 && (string.substring(0,2).equals("--") ||
-        string.substring(0,1).equals("-"));
+    return string.length() >= 2 && (string.substring(0, 2).equals("--") ||
+        string.substring(0, 1).equals("-"));
   }
 
   /**
@@ -215,9 +217,9 @@ public class Flag {
    * @return The extracted name or null If |string| is not flag-like.
    */
   public static String extractName(String string) {
-    if (string.substring(0,2).equals("--"))
+    if (string.substring(0, 2).equals("--"))
       return string.substring(2);
-    else if (string.substring(0,1).equals("-"))
+    else if (string.substring(0, 1).equals("-"))
       return string.substring(1);
     else
       return null;
