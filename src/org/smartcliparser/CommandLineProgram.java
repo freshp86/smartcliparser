@@ -51,6 +51,7 @@ public abstract class CommandLineProgram {
    */
   public List<ParsingError> errors;
 
+
   /**
    * Creates an instance without parsing any args.
    */
@@ -60,6 +61,7 @@ public abstract class CommandLineProgram {
     this.unconsumed = new Flag(new String[]{ "unconsumed" }, false, 0, 0, true);
     this.registerFlag(this.unconsumed);
   }
+
 
   /**
    * Creates an instance and parses |args|.
@@ -77,6 +79,7 @@ public abstract class CommandLineProgram {
     }
   }
 
+
   public void detectErrors() {
     this.errors = new LinkedList<ParsingError>();
     Iterator<Flag> it = this.flags.iterator();
@@ -92,12 +95,14 @@ public abstract class CommandLineProgram {
     }
   }
 
+
   public void printErrors() {
     Iterator<ParsingError> errorsIterator = this.errors.iterator();
     while (errorsIterator.hasNext()) {
       System.out.println(errorsIterator.next().toString());
     }
   }
+
 
   /**
    * Sets the maximum/minumum allowable number of unconsumed args.
@@ -106,15 +111,18 @@ public abstract class CommandLineProgram {
     this.unconsumed.setNumOfArgs(min, max);
   }
 
+
   /**
    * Subclasses should register all flags within this method.
    */
   public abstract void initialize();
 
+
   /**
    * This method will get called if all arguments are parsed correctly.
    */
   public abstract void run();
+
 
   /**
    * Registers a flag.
@@ -129,6 +137,7 @@ public abstract class CommandLineProgram {
       this.flagsMap.put(it.next(), flag);
   }
 
+
   /**
    * Checks if |name| corresponds to a registered flag.
    * @param name The name of the flag to check.
@@ -138,6 +147,7 @@ public abstract class CommandLineProgram {
     return this.flagsMap.get(name) != null;
   }
  
+
   /**
    * Parses arguments.
    * @param args The arguments to parse.
@@ -162,6 +172,7 @@ public abstract class CommandLineProgram {
     return isParsingValid();
   }
 
+
   /**
    * Checks if parsing of arguments was successful. It can fail if a required
    * flag was not present, if wrong number of args was passed to a flag.
@@ -183,6 +194,7 @@ public abstract class CommandLineProgram {
    // TODO: find how to return the exact error that caused parsing to fail.
     return true;
   }
+
 
   /**
    * Clears all parsed data.

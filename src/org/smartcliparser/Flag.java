@@ -60,25 +60,30 @@ public class Flag {
 
   public List<ParsingError> errors;
 
+
   public Flag() {
     this(new LinkedList<String>(), false, 0, 0, false);
   }
+
 
   public Flag(String name) {
     this(new LinkedList<String>(), false, 0, 0, false);
     this.registerName(name);
   }
 
+
   public Flag(String[] names, boolean isRequired, int numOfArgsMin,
       int numOfArgsMax) {
     this(Arrays.asList(names), isRequired, numOfArgsMin, numOfArgsMax, false);
   }
+
 
   public Flag(String[] names, boolean isRequired, int numOfArgsMin,
       int numOfArgsMax, boolean forceConsume) {
     this(Arrays.asList(names), isRequired, numOfArgsMin, numOfArgsMax,
          forceConsume);
   }
+
 
   public Flag(List<String> names, boolean isRequired, int numOfArgsMin,
       int numOfArgsMax, boolean forceConsume) {
@@ -90,17 +95,21 @@ public class Flag {
     this.args = new LinkedList<String>();
   }
 
+
   public boolean isSet() {
     return this.isSet;
   }
+
 
   public int getNumOfArgsMin() {
     return this.numOfArgsMin;
   }
 
+
   public int getNumOfArgsMax() {
     return this.numOfArgsMax;
   }
+
 
   /**
    * Sets the maximum/minumum allowable number of args for this flag.
@@ -109,6 +118,7 @@ public class Flag {
     this.numOfArgsMin = Math.min(min, max);
     this.numOfArgsMax = Math.max(min, max);
   }
+
 
   /**
    * Registers a name for this flag. Usually flags have two names, a short and
@@ -119,12 +129,14 @@ public class Flag {
     this.names.add(name);
   }
 
+
   /**
    * @return A list of all names registered.
    */
   public List<String> getNames() {
     return this.names;
   }
+
 
   /**
    * Checks if the given name is registered.
@@ -140,6 +152,7 @@ public class Flag {
     return false;
   }
 
+
   /**
    * Marks this flag as required or optional.
    * @param isRequired True if this flag is required for the program to execute.
@@ -147,6 +160,7 @@ public class Flag {
   public void setIsRequired(boolean isRequired) {
     this.isRequired = isRequired;
   }
+
 
   /**
    * Consumes all args that belong to this flag.
@@ -169,6 +183,7 @@ public class Flag {
     }
   }
 
+
   /**
    * Checks if flag is in a valid state.
    * @return True if this flag is in a valid state. Which means either of the
@@ -181,6 +196,7 @@ public class Flag {
         this.args.size() <= this.numOfArgsMax) ||
         (!this.isSet && !this.isRequired);
   }
+
 
   public List<ParsingError> getErrors() {
     this.errors = new LinkedList<ParsingError>();
@@ -199,6 +215,7 @@ public class Flag {
     return this.errors;
   }
 
+
   /**
    * Checks if a string looks like a flag. A string is flag-like when either of
    * the following is true.
@@ -212,6 +229,7 @@ public class Flag {
         string.substring(0, 1).equals("-"));
   }
 
+
   /**
    * Extracts the name of the flag by removing any preceding dashes.
    * @return The extracted name or null If |string| is not flag-like.
@@ -224,6 +242,7 @@ public class Flag {
     else
       return null;
   }
+
 
   public String toString() {
     StringBuffer out = new StringBuffer();

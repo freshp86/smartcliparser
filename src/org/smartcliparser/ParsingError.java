@@ -26,20 +26,24 @@ public class ParsingError {
   public Flag flag;
   public Type type;
 
+
   public ParsingError(ParsingError.Type type, Flag flag) {
     this.flag = flag;
     this.type = type;
   }
+
 
   public ParsingError(ParsingError.Type type, String flagName) {
     this.flag = new Flag(flagName);
     this.type = type;
   }
 
+
   public String toString() {
     return this.flag.getNames().get(0) + ": " + this.type.toString() + ": " +
         this.getDescription();
   }
+
 
   public String getDescription() {
     if (this.type == Type.MIN_NUMBER_OF_ARGS_VIOLATION) {

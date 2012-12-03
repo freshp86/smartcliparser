@@ -54,4 +54,3 @@ public class Reverse extends CommandLineProgram {
   }
 
 }  // class Reverse
-
