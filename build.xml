@@ -19,6 +19,7 @@
   <property name="lib.dir"               value="lib"/>
   <property name="resources.dir"         value="resources"/>
   <property name="tests.src.dir"         value="tests"/>
+  <property name="doc.dir"               value="doc"/>
 
   <property name="classes.dir"           value="${build.dir}/classes"/>
   <property name="jar.dir"               value="${build.dir}/jar"/>
@@ -37,6 +38,16 @@
 
   <target name="clean">
     <delete dir="${build.dir}"/>
+    <delete dir="${doc.dir}"/>
+  </target>
+
+  <target name="doc">
+    <javadoc destdir="${doc.dir}" packagenames="org.*" sourcepath="${src.dir}">
+      <classpath>
+        <path refid="classpath"/>
+      </classpath>
+      <link href="http://docs.oracle.com/javase/6/docs/api/"/>
+    </javadoc>
   </target>
 
   <target name="compile">
