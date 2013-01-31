@@ -67,8 +67,7 @@ public class Flag {
 
 
   public Flag(String name) {
-    this(new LinkedList<String>(), false, 0, 0, false);
-    this.registerName(name);
+    this(new String[]{name}, false, 0, 0, false);
   }
 
 
@@ -87,6 +86,7 @@ public class Flag {
 
   public Flag(List<String> names, boolean isRequired, int numOfArgsMin,
       int numOfArgsMax, boolean forceConsume) {
+    // TODO(dpapad); Make sure that the same name can not be registered twice.
     this.names = names;
     this.isRequired = isRequired;
     this.setNumOfArgs(numOfArgsMin, numOfArgsMax);
@@ -115,18 +115,8 @@ public class Flag {
    * Sets the maximum/minumum allowable number of args for this flag.
    */
   public void setNumOfArgs(int min, int max) {
-    this.numOfArgsMin = Math.min(min, max);
-    this.numOfArgsMax = Math.max(min, max);
-  }
-
-
-  /**
-   * Registers a name for this flag. Usually flags have two names, a short and
-   * a long one.
-   * @param name The name to register.
-   */
-  public void registerName(String name) {
-    this.names.add(name);
+    this.numOfArgsMin = Math.max(0, Math.min(min, max));
+    this.numOfArgsMax = Math.max(0, Math.max(min, max));
   }
 
 
@@ -225,8 +215,10 @@ public class Flag {
    * @return True if the string looks like a flag.
    */
   public static boolean isFlagLike(String string) {
-    return string.length() >= 2 && (string.substring(0, 2).equals("--") ||
-        string.substring(0, 1).equals("-"));
+    // TODO(dpapad): User regular expressions instead.
+    return (string.length() > 2 && string.substring(0, 2).equals("--")) ||
+        (string.length() == 2 && !string.equals("--") &&
+            string.substring(0, 1).equals("-"));
   }
 
 
@@ -235,12 +227,15 @@ public class Flag {
    * @return The extracted name or null If |string| is not flag-like.
    */
   public static String extractName(String string) {
-    if (string.substring(0, 2).equals("--"))
-      return string.substring(2);
-    else if (string.substring(0, 1).equals("-"))
-      return string.substring(1);
-    else
+    if (!Flag.isFlagLike(string)) {
       return null;
+    }
+
+    if (string.length() > 2) {
+      return string.substring(2);
+    } else {
+      return string.substring(1);
+    }
   }
 
 
