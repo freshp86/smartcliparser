@@ -14,21 +14,7 @@
 -->
 <project name="smart-cli-parser" basedir="." default="main">
 
-  <property name="src.dir"               value="src"/>
-  <property name="build.dir"             value="bin"/>
-  <property name="lib.dir"               value="lib"/>
-  <property name="resources.dir"         value="resources"/>
-  <property name="tests.src.dir"         value="tests"/>
-  <property name="doc.dir"               value="doc"/>
-
-  <property name="classes.dir"           value="${build.dir}/classes"/>
-  <property name="jar.dir"               value="${build.dir}/jar"/>
-  <property name="tests.dir"             value="${build.dir}/tests"/>
-
-  <property name="tests.classes.dir"     value="${tests.dir}/classes"/>
-  <property name="tests.resources.dir"   value="${tests.classes.dir}/resources"/>
-  <property name="tests.reports.dir"     value="${tests.dir}/reports"/>
-
+  <property file="build.properties" />
 
   <path id="classpath">
     <fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -39,6 +25,7 @@
   <target name="clean">
     <delete dir="${build.dir}"/>
     <delete dir="${doc.dir}"/>
+    <delete dir="${coverage.dir}"/>
   </target>
 
   <target name="doc">
