@@ -1,5 +1,7 @@
 #java specific
 bin/
+coverage/
+jacoco.exec
 .classpath
 .project
 .settings

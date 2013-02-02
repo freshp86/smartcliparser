@@ -12,7 +12,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<project name="smart-cli-parser" basedir="." default="main">
+<project name="smart-cli-parser" basedir="." default="main"
+    xmlns:jacoco="antlib:org.jacoco.ant">
 
   <property file="build.properties" />
 
@@ -22,25 +23,24 @@
 
   <path id="application" location="${jar.dir}/${ant.project.name}.jar"/>
 
+  <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+    <classpath path="../../programs/jacoco-0.6.1.201212231917/lib/jacocoant.jar"/>
+  </taskdef>
+
   <target name="clean">
     <delete dir="${build.dir}"/>
     <delete dir="${doc.dir}"/>
     <delete dir="${coverage.dir}"/>
+    <delete file="jacoco.exec"/>
   </target>
 
-  <target name="doc">
-    <javadoc destdir="${doc.dir}" packagenames="org.*" sourcepath="${src.dir}">
-      <classpath>
-        <path refid="classpath"/>
-      </classpath>
-      <link href="http://docs.oracle.com/javase/6/docs/api/"/>
-    </javadoc>
-  </target>
+  <!--- Build targets -->
 
   <target name="compile">
-    <mkdir dir="${classes.dir}"/>
+  <mkdir dir="${classes.dir}"/>
     <javac srcdir="${src.dir}" destdir="${classes.dir}"
-        includeantruntime="true">
+        includeantruntime="true"
+        debug="${isDebug}">
       <classpath>
         <path refid="classpath"/>
       </classpath>
@@ -50,21 +50,7 @@
     </copy>
   </target>
 
-  <target name="jar" depends="compile">
-    <mkdir dir="${jar.dir}"/>
-    <jar destfile="${jar.dir}/${ant.project.name}.jar" 
-         basedir="${classes.dir}"></jar>
-  </target>
-
-  <target name="run" depends="jar">
-    <java fork="true" classname="${main-class}">
-      <classpath>
-        <path refid="application"/>
-      </classpath>
-    </java>
-  </target>
-
-  <target name="compile_tests" depends="compile">
+  <target name="compile_tests" depends="compile_debug">
     <mkdir dir="${tests.classes.dir}"/>
     <javac srcdir="${tests.src.dir}"
            destdir="${tests.classes.dir}"
@@ -78,6 +64,14 @@
       <fileset dir="${resources.dir}"/>
     </copy>
   </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="${jar.dir}"/>
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" 
+         basedir="${classes.dir}"></jar>
+  </target>
+
+  <!--- Test targets -->
 
   <target name="junit" depends="compile_tests">
     <junit printsummary="no">
@@ -113,7 +107,7 @@
 
   <target name="runtest" description="Runs the test you specify on the command 
       line with -Dtest=" depends="compile_tests, ensure-test-name">
-    <junit printsummary="no"> 
+    <junit printsummary="no">
       <classpath>
         <path location="${classes.dir}"/>
         <path location="${tests.classes.dir}"/>
@@ -125,4 +119,55 @@
       </batchtest>
     </junit>
   </target>
+
+  <!--- Target for generating javadoc -->
+
+  <target name="doc">
+    <javadoc destdir="${doc.dir}" packagenames="org.*" sourcepath="${src.dir}">
+      <classpath>
+        <path refid="classpath"/>
+      </classpath>
+      <link href="http://docs.oracle.com/javase/6/docs/api/"/>
+    </javadoc>
+  </target>
+
+  <!--- Targets for  generating code coverage reports -->
+
+  <target name="compile_debug">
+    <antcall target="compile">
+      <param name="isDebug" value="true"/>
+    </antcall>
+  </target>
+
+  <target name="coverage" depends="compile_tests">
+    <jacoco:coverage append="false">
+      <junit printsummary="no" fork="true" forkmode="once">
+        <classpath>
+          <path location="${classes.dir}"/>
+          <path location="${tests.classes.dir}"/>
+          <path refid="classpath"/>
+        </classpath>
+        <formatter type="plain" usefile="false"/>
+        <batchtest>
+          <fileset dir="${tests.src.dir}" includes="**/*Test.java"/>
+        </batchtest>
+      </junit>
+    </jacoco:coverage>
+
+    <jacoco:report>
+      <executiondata>
+        <file file="jacoco.exec"/>
+      </executiondata>
+      <structure name="smart-cli-parser">
+        <classfiles>
+          <fileset dir="${classes.dir}"/>
+        </classfiles>
+        <sourcefiles encoding="UTF-8">
+          <fileset dir="${src.dir}"/>
+        </sourcefiles>
+      </structure>
+      <html destdir="${coverage.dir}"/>
+    </jacoco:report>
+  </target>
+
 </project>
