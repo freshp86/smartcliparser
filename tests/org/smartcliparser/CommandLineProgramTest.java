@@ -41,7 +41,7 @@ public class CommandLineProgramTest {
     public void initialize() {
       Flag f1 = new Flag(new String[]{ "output", "o" }, true, 1, 1);
       Flag f2 = new Flag(new String[]{ "input", "i" }, true, 1, 2);
-      Flag f3 = new Flag(new String[]{ "compress", "c" }, false, 0, 0);
+      Flag f3 = Flag.createSwitch(new String[]{ "compress", "c" });
       Flag f4 = new Flag(new String[]{ "filter", "f" }, false, 0,
                          Flag.UNLIMITED_NUM_OF_ARGS);
       registerFlag(f1);

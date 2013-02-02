@@ -50,6 +50,12 @@
     </copy>
   </target>
 
+  <target name="compile_debug">
+    <antcall target="compile">
+      <param name="isDebug" value="true"/>
+    </antcall>
+  </target>
+
   <target name="compile_tests" depends="compile_debug">
     <mkdir dir="${tests.classes.dir}"/>
     <javac srcdir="${tests.src.dir}"
@@ -132,12 +138,6 @@
   </target>
 
   <!--- Targets for  generating code coverage reports -->
-
-  <target name="compile_debug">
-    <antcall target="compile">
-      <param name="isDebug" value="true"/>
-    </antcall>
-  </target>
 
   <target name="coverage" depends="compile_tests">
     <jacoco:coverage append="false">

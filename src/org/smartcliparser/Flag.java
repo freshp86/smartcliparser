@@ -61,11 +61,6 @@ public class Flag {
   public List<ParsingError> errors;
 
 
-  public Flag() {
-    this(new LinkedList<String>(), false, 0, 0, false);
-  }
-
-
   public Flag(String name) {
     this(new String[]{name}, false, 0, 0, false);
   }
@@ -73,26 +68,24 @@ public class Flag {
 
   public Flag(String[] names, boolean isRequired, int numOfArgsMin,
       int numOfArgsMax) {
-    this(Arrays.asList(names), isRequired, numOfArgsMin, numOfArgsMax, false);
+    this(names, isRequired, numOfArgsMin, numOfArgsMax, false);
   }
 
 
   public Flag(String[] names, boolean isRequired, int numOfArgsMin,
       int numOfArgsMax, boolean forceConsume) {
-    this(Arrays.asList(names), isRequired, numOfArgsMin, numOfArgsMax,
-         forceConsume);
-  }
-
-
-  public Flag(List<String> names, boolean isRequired, int numOfArgsMin,
-      int numOfArgsMax, boolean forceConsume) {
     // TODO(dpapad); Make sure that the same name can not be registered twice.
-    this.names = names;
+    this.names = Arrays.asList(names);
     this.isRequired = isRequired;
     this.setNumOfArgs(numOfArgsMin, numOfArgsMax);
     this.forceConsume = forceConsume;
     this.isSet = false;
     this.args = new LinkedList<String>();
+  }
+
+
+  public static Flag createSwitch(String[] names) {
+    return new Flag(names, false, 0, 0, false);
   }
 
 
