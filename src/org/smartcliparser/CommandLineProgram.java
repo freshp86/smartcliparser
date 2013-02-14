@@ -36,6 +36,8 @@ public abstract class CommandLineProgram {
 
   public Set<Flag> flags;
 
+  private List<Flag> requiredFlagSet = null;
+
   /**
    * A special flag used for managing unconsumed arguments.
    */
@@ -83,8 +85,16 @@ public abstract class CommandLineProgram {
   public void detectErrors() {
     this.errors = new LinkedList<ParsingError>();
     Iterator<Flag> it = this.flags.iterator();
-    while (it.hasNext())
+    while (it.hasNext()) {
       this.errors.addAll(it.next().getErrors());
+    }
+
+    // TODO(dpapad): Cache the result, so that this method is not called twice.
+    if (!this.checkRequiredFlasSetSatisfied()) {
+      // TODO(dpapad): Create an appropriate ParsingError, need to change it so
+      // that an error can be associated with multiple flags.
+      System.err.println("Required flag set is not met");
+    }
 
     ListIterator<String> itArgs = this.args.listIterator();
     while (itArgs.hasNext()) {
@@ -139,6 +149,15 @@ public abstract class CommandLineProgram {
 
 
   /**
+   * Registers a required flag set. Such a set indicates that at least one of
+   * the listed flags has to be provided, otherwise parsing should fail.
+   */
+  public void setRequiredFlagSet(Flag[] flags) {
+    this.requiredFlagSet = Arrays.asList(flags);
+  }
+
+
+  /**
    * Checks if |name| corresponds to a registered flag.
    * @param name The name of the flag to check.
    * @return True if a flag with that name is registered.
@@ -146,7 +165,7 @@ public abstract class CommandLineProgram {
   public boolean hasFlag(String name) {
     return this.flagsMap.get(name) != null;
   }
- 
+
 
   /**
    * Parses arguments.
@@ -160,7 +179,7 @@ public abstract class CommandLineProgram {
       if (Flag.isFlagLike(arg) && hasFlag(Flag.extractName(arg))) {
         itArgs.remove();
         this.flagsMap.get(Flag.extractName(arg)).consume(this.args, itArgs);
-      } 
+      }
     }
 
     // Placing remaining args to this.unconsumed as described by it.
@@ -185,6 +204,10 @@ public abstract class CommandLineProgram {
         return false;
     }
 
+    if (!this.checkRequiredFlasSetSatisfied()) {
+      return false;
+    }
+
     // Checking if the number of unconsumed flags is as expected. All
     // unconsumed args should have been consumed by |this.unconsumed| and
     // |this.args| should be empty.
@@ -193,6 +216,29 @@ public abstract class CommandLineProgram {
 
    // TODO: find how to return the exact error that caused parsing to fail.
     return true;
+  }
+
+
+  /**
+   * Checking that at least one of the flags in the required flags set is
+   * actually set.
+   * @return True if the required flag set constraint is met.
+   */
+  public boolean checkRequiredFlasSetSatisfied() {
+    if (this.requiredFlagSet == null) {
+      return true;
+    }
+
+    Iterator<Flag> it = this.requiredFlagSet.iterator();
+    boolean requiredFlagSetSatisfied = false;
+    while (it.hasNext()) {
+      if (it.next().isSet()) {
+        requiredFlagSetSatisfied = true;
+        break;
+      }
+    }
+
+    return requiredFlagSetSatisfied;
   }
 
 
