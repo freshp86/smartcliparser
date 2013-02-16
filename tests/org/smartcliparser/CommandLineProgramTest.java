@@ -18,9 +18,6 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.smartcliparser.Flag;
-import org.smartcliparser.CommandLineProgram;
-
 public class CommandLineProgramTest {
 
   // Sample command line program used for testing.
@@ -32,17 +29,17 @@ public class CommandLineProgramTest {
      */
     public boolean success;
 
-    public SampleProgram() {};
+    public SampleProgram() { };
 
     public SampleProgram(String[] args) {
       super(args);
     }
 
     public void initialize() {
-      Flag f1 = new Flag(new String[]{ "output", "o" }, true, 1, 1);
-      Flag f2 = new Flag(new String[]{ "input", "i" }, true, 1, 2);
-      Flag f3 = Flag.createSwitch(new String[]{ "compress", "c" });
-      Flag f4 = new Flag(new String[]{ "filter", "f" }, false, 0,
+      Flag f1 = new Flag(new String[]{"output", "o"}, true, 1, 1);
+      Flag f2 = new Flag(new String[]{"input", "i"}, true, 1, 2);
+      Flag f3 = Flag.createSwitch(new String[]{"compress", "c"});
+      Flag f4 = new Flag(new String[]{"filter", "f"}, false, 0,
                          Flag.UNLIMITED_NUM_OF_ARGS);
       registerFlag(f1);
       registerFlag(f2);
@@ -78,35 +75,35 @@ public class CommandLineProgramTest {
 
   @Test
   public void testParseAllArgsSuccess() {
-    String[] args = { "--output", "log.txt",
+    String[] args = {"--output", "log.txt",
                       "-i", "input1.txt", "input2.txt",
-                      "-c" };
+                      "-c"};
     assertTrue(program.parseArgs(args));
     assertEquals(0, program.args.size());
   }
 
   @Test
   public void testParseAllArgsFail() {
-    String[] args = { "--output",
+    String[] args = {"--output",
                       "-i", "input1.txt", "input2.txt",
-                      "-c" };
+                      "-c"};
     assertFalse(program.parseArgs(args));
   }
 
   @Test
   public void testParseArgsUnconsumedFail1() {
-    String[] args = new String[]{ "--output", "log.txt", "log2.txt",
+    String[] args = new String[]{"--output", "log.txt", "log2.txt",
                                  "-i", "input1.txt", "input2.txt",
-                                 "-c" };
+                                 "-c"};
     assertFalse(program.parseArgs(args));
     assertEquals(0, program.args.size());
   }
 
   @Test
   public void testParseArgsUnconsumedFail2() {
-    String[] args = new String[]{ "--output", "log.txt", "unconsumed1.txt",
+    String[] args = new String[]{"--output", "log.txt", "unconsumed1.txt",
                                  "-i", "input1.txt",
-                                 "-u", "unconsumed2.txt" };
+                                 "-u", "unconsumed2.txt"};
     // TODO: -u stops the unconsumed args to be consumed by this.unconsumed flag
     // decide if this is alright. Decision:No. Fix this.
     program.setUnconsumedFlags(0, 2);
@@ -116,18 +113,18 @@ public class CommandLineProgramTest {
 
   @Test
   public void testParseArgsUnconsumedFail3() {
-    String[] args = { "--output", "log.txt",
-                      "-i", "input1.txt", "input2.txt",
-                      "-c", "-n", "--no-such-flag" };
+    String[] args = {"--output", "log.txt",
+                     "-i", "input1.txt", "input2.txt",
+                     "-c", "-n", "--no-such-flag"};
     assertFalse(program.parseArgs(args));
     assertEquals(2, program.args.size());
   }
 
   @Test
   public void testParseArgsUnconsumedSuccess() {
-    String[] args = new String[]{ "--output", "log.txt", "unconsumed1.txt",
+    String[] args = new String[]{"--output", "log.txt", "unconsumed1.txt",
                                  "-i", "input1.txt", "input2.txt",
-                                 "unknown_arg" };
+                                 "unknown_arg"};
     program.setUnconsumedFlags(2, 2);
     assertTrue(program.parseArgs(args));
     assertEquals(0, program.args.size());
@@ -135,9 +132,9 @@ public class CommandLineProgramTest {
 
   @Test
   public void testParseArgsUnlimitedSuccess() {
-    String[] args = new String[]{ "--output", "log.txt",
+    String[] args = new String[]{"--output", "log.txt",
                                  "-i", "input1.txt", "input2.txt",
-                                 "--filter", "f1", "f2", "f3", "f4", "f5" };
+                                 "--filter", "f1", "f2", "f3", "f4", "f5"};
     assertTrue(program.parseArgs(args));
     assertEquals(0, program.args.size());
     Flag filterFlag = program.flagsMap.get("filter");
@@ -146,18 +143,18 @@ public class CommandLineProgramTest {
 
   @Test
   public void testRunIsCalled() {
-    String[] args = { "--output", "log.txt",
-                      "-i", "input1.txt", "input2.txt",
-                      "-c" };
+    String[] args = {"--output", "log.txt",
+                     "-i", "input1.txt", "input2.txt",
+                     "-c" };
     SampleProgram program2 = new SampleProgram(args);
     assertTrue(program2.success);
   }
 
   @Test
   public void testRunIsNotCalled() {
-    String[] args = { "--output", "log.txt", "log2.txt",
-                      "-i", "input1.txt", "input2.txt",
-                      "-c" };
+    String[] args = {"--output", "log.txt", "log2.txt",
+                     "-i", "input1.txt", "input2.txt",
+                     "-c"};
     // TODO(dpapad) Find how to test a function that calls System.exit.
     //SampleProgram program3 = new SampleProgram(args);
     // JVM is shutting down and ant reports failure.

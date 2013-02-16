@@ -60,7 +60,7 @@ public abstract class CommandLineProgram {
   public CommandLineProgram() {
     this.flags = new HashSet<Flag>();
     this.flagsMap = new HashMap<String, Flag>();
-    this.unconsumed = new Flag(new String[]{ "unconsumed" }, false, 0, 0, true);
+    this.unconsumed = new Flag(new String[]{"unconsumed"}, false, 0, 0, true);
     this.registerFlag(this.unconsumed);
   }
 
@@ -139,12 +139,14 @@ public abstract class CommandLineProgram {
    * @param flag The flag to register.
    */
   public void registerFlag(Flag flag) {
-    if (!this.flags.add(flag))
+    if (!this.flags.add(flag)) {
       return;
+    }
     List<String> names = flag.getNames();
     Iterator<String> it = names.iterator();
-    while (it.hasNext())
+    while (it.hasNext()) {
       this.flagsMap.put(it.next(), flag);
+    }
   }
 
 
@@ -184,8 +186,9 @@ public abstract class CommandLineProgram {
 
     // Placing remaining args to this.unconsumed as described by it.
     itArgs = this.args.listIterator();
-    if (itArgs.hasNext())
+    if (itArgs.hasNext()) {
       this.unconsumed.consume(this.args, itArgs);
+    }
     // TODO: consume again here until only uknown flags exist in this.args.
 
     return isParsingValid();
@@ -200,8 +203,9 @@ public abstract class CommandLineProgram {
   public boolean isParsingValid() {
     Iterator<Flag> it = this.flags.iterator();
     while (it.hasNext()) {
-      if (!it.next().isValid())
+      if (!it.next().isValid()) {
         return false;
+      }
     }
 
     if (!this.checkRequiredFlasSetSatisfied()) {
@@ -211,8 +215,9 @@ public abstract class CommandLineProgram {
     // Checking if the number of unconsumed flags is as expected. All
     // unconsumed args should have been consumed by |this.unconsumed| and
     // |this.args| should be empty.
-    if (this.args.size() > 0 || !this.unconsumed.isValid())
+    if (this.args.size() > 0 || !this.unconsumed.isValid()) {
       return false;
+    }
 
    // TODO: find how to return the exact error that caused parsing to fail.
     return true;
@@ -247,9 +252,10 @@ public abstract class CommandLineProgram {
    */
   public void clear() {
     Iterator<Flag> it = this.flags.iterator();
-    while (it.hasNext())
+    while (it.hasNext()) {
       it.next().args.clear();
+    }
     this.args.clear();
   }
 
-}  // class CommandLineProgram 
+}  // class CommandLineProgram

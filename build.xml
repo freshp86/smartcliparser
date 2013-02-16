@@ -27,6 +27,16 @@
     <classpath path="../../programs/jacoco-0.6.1.201212231917/lib/jacocoant.jar"/>
   </taskdef>
 
+  <taskdef resource="checkstyletask.properties"
+    classpath="${checkstyle.dir}/checkstyle-5.6-all.jar"/>
+
+  <target name="checkstyle">
+    <checkstyle config="style_checks.xml">
+      <fileset dir="${src.dir}" includes="**/*.java"/>
+      <fileset dir="${tests.src.dir}" includes="**/*.java"/>
+    </checkstyle>
+  </target>
+
   <target name="clean">
     <delete dir="${build.dir}"/>
     <delete dir="${doc.dir}"/>

@@ -18,10 +18,10 @@ public class Reverse extends CommandLineProgram {
   @Override
   public void initialize() {
     // Specifying flags.
-    inputFlag = new Flag(new String[]{ "input", "i" }, true, 1,
+    inputFlag = new Flag(new String[]{"input", "i"}, true, 1,
       Flag.UNLIMITED_NUM_OF_ARGS);
-    uppercaseFlag = Flag.createSwitch(new String[]{ "uppercase", "u" });
-    lowercaseFlag = Flag.createSwitch(new String[]{ "lowercase", "l" });
+    uppercaseFlag = Flag.createSwitch(new String[]{"uppercase", "u"});
+    lowercaseFlag = Flag.createSwitch(new String[]{"lowercase", "l"});
 
     // Registering all flags so that the program knows how to parse them.
     registerFlag(inputFlag);
@@ -45,8 +45,9 @@ public class Reverse extends CommandLineProgram {
 
   private String reverse(String string) {
     StringBuffer out = new StringBuffer();
-    for (int i = string.length() - 1; i >= 0; i--)
+    for (int i = string.length() - 1; i >= 0; i--) {
       out.append(string.charAt(i));
+    }
     return out.toString();
   }
 

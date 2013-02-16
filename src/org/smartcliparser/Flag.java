@@ -24,7 +24,7 @@ import java.util.ListIterator;
 public class Flag {
 
   // Convenience alias for (seemingly) unlimited number of args.
-  public static int UNLIMITED_NUM_OF_ARGS = Integer.MAX_VALUE;
+  public static final int UNLIMITED_NUM_OF_ARGS = Integer.MAX_VALUE;
 
   /**
    * A list of all names for this flag.
@@ -129,8 +129,9 @@ public class Flag {
   public boolean hasName(String name) {
     Iterator<String> it = this.names.iterator();
     while (it.hasNext()) {
-      if (it.next().equals(name))
+      if (it.next().equals(name)) {
         return true;
+      }
     }
     return false;
   }
