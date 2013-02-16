@@ -20,11 +20,21 @@ import java.util.List;
 
 public class MultiFlagParsingError implements ParsingError {
 
+  /**
+   * The types of errors that can be associated with multiple flags.
+   */
   public static enum Type {
     REQUIRED_FLAG_SET_VIOLATION
   }
 
+  /**
+   * The flags that caused the error.
+   */
   public List<Flag> flags;
+
+  /**
+   * The type of the error that occurred.
+   */
   public Type type;
 
 
@@ -35,10 +45,12 @@ public class MultiFlagParsingError implements ParsingError {
   }
 
 
+  @Override
   public String toString() {
     return this.getFlagNames() + ": " + this.type.toString() + ": " +
         this.getDescription();
   }
+
 
   private List<String> getFlagNames() {
     List<String> flagNames = new ArrayList<String>();

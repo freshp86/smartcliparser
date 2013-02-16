@@ -36,6 +36,10 @@ public abstract class CommandLineProgram {
 
   public Set<Flag> flags;
 
+  /**
+   * A set of flags that is required. At least one of the flags in this set
+   * needs to be specified for parsing to succeed.
+   */
   private List<Flag> requiredFlagSet = null;
 
   /**
@@ -92,8 +96,8 @@ public abstract class CommandLineProgram {
     // TODO(dpapad): Cache the result, so that this method is not called twice.
     if (!this.checkRequiredFlasSetSatisfied()) {
       this.errors.add(new MultiFlagParsingError(
-            MultiFlagParsingError.Type.REQUIRED_FLAG_SET_VIOLATION,
-            this.requiredFlagSet));
+          MultiFlagParsingError.Type.REQUIRED_FLAG_SET_VIOLATION,
+          this.requiredFlagSet));
     }
 
     ListIterator<String> itArgs = this.args.listIterator();
@@ -110,7 +114,7 @@ public abstract class CommandLineProgram {
   public void printErrors() {
     Iterator<ParsingError> errorsIterator = this.errors.iterator();
     while (errorsIterator.hasNext()) {
-      System.out.println(errorsIterator.next().toString());
+      System.err.println(errorsIterator.next().toString());
     }
   }
 
@@ -220,7 +224,6 @@ public abstract class CommandLineProgram {
       return false;
     }
 
-   // TODO: find how to return the exact error that caused parsing to fail.
     return true;
   }
 

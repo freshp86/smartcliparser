@@ -16,6 +16,9 @@ package org.smartcliparser;
 
 public class SingleFlagParsingError implements ParsingError {
 
+  /**
+   * Types of errors that can be related to a single flag.
+   */
   public static enum Type {
     MIN_NUMBER_OF_ARGS_VIOLATION,
     MAX_NUMBER_OF_ARGS_VIOLATION,
@@ -23,7 +26,14 @@ public class SingleFlagParsingError implements ParsingError {
     UNKNOWN_FLAG
   }
 
+  /**
+   * The flag that caused the error.
+   */
   public Flag flag;
+
+  /**
+   * The type of the error that occurred.
+   */
   public Type type;
 
 
@@ -40,6 +50,7 @@ public class SingleFlagParsingError implements ParsingError {
   }
 
 
+  @Override
   public String toString() {
     return this.flag.getNames().get(0) + ": " + this.type.toString() + ": " +
         this.getDescription();
@@ -63,4 +74,3 @@ public class SingleFlagParsingError implements ParsingError {
   }
 
 }  // class SingleFlagParsingError
-
