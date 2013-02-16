@@ -20,8 +20,9 @@ public class SingleFlagParsingError implements ParsingError {
    * Types of errors that can be related to a single flag.
    */
   public static enum Type {
-    MIN_NUMBER_OF_ARGS_VIOLATION,
     MAX_NUMBER_OF_ARGS_VIOLATION,
+    MIN_NUMBER_OF_ARGS_VIOLATION,
+    PATTERN_VIOLATION,
     REQUIRED_FLAG_NOT_SET,
     UNKNOWN_FLAG
   }
@@ -65,6 +66,8 @@ public class SingleFlagParsingError implements ParsingError {
     } else if (this.type == Type.MAX_NUMBER_OF_ARGS_VIOLATION) {
       return "Expected at most " + flag.getNumOfArgsMax() +
           " arguments, but got " + flag.args.size();
+    } else if (this.type == Type.PATTERN_VIOLATION) {
+      return "Arguments should follow the pattern " + flag.pattern + ".";
     } else if (this.type == Type.REQUIRED_FLAG_NOT_SET) {
       return "Required flag " + flag.getNames().get(0) + " was not set.";
     } else if (this.type == Type.UNKNOWN_FLAG) {

@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 // A class representing a flag that of a command line program.
 public class Flag {
@@ -37,43 +39,56 @@ public class Flag {
   private boolean isRequired;
 
   /**
-   * Minimum/Maximum number of arguments that this flag can consume.
+   * Minimum number of arguments that this flag can consume.
    */
   private int numOfArgsMin;
+
+  /**
+   * Maximum number of arguments that this flag can consume.
+   */
   private int numOfArgsMax;
 
   /**
    * True if this flag was set.
    */
-  private boolean isSet;
+  private boolean isSet = false;
 
   /**
    * If true, |numOfArgsMax| is ignored while consuming args. It is still taken
    * into account when determining whether parsing succeeded.
    */
-  private boolean forceConsume;
+  private boolean forceConsume = false;
+
+  /**
+   * A regular expression that all arguments of the flag need to satisfy in
+   * order for parsing to succeed.
+   */
+  public Pattern pattern = null;
 
   /**
    * A list of all arguments that were consumed by this flag.
    */
-  public List<String> args;
+  public List<String> args = null;
 
-  public List<ParsingError> errors;
+  /**
+   * A list of all errors that caused parsing of this flag to fail.
+   */
+  public List<ParsingError> errors = null;
 
 
   public Flag(String name) {
-    this(new String[]{name}, false, 0, 0, false);
+    this(new String[]{name}, false, 0, 0, null, false);
   }
 
 
   public Flag(String[] names, boolean isRequired, int numOfArgsMin,
       int numOfArgsMax) {
-    this(names, isRequired, numOfArgsMin, numOfArgsMax, false);
+    this(names, isRequired, numOfArgsMin, numOfArgsMax, null, false);
   }
 
 
   public Flag(String[] names, boolean isRequired, int numOfArgsMin,
-      int numOfArgsMax, boolean forceConsume) {
+      int numOfArgsMax, Pattern pattern, boolean forceConsume) {
     // TODO(dpapad); Make sure that the same name can not be registered twice.
     this.names = Arrays.asList(names);
     this.isRequired = isRequired;
@@ -81,11 +96,12 @@ public class Flag {
     this.forceConsume = forceConsume;
     this.isSet = false;
     this.args = new LinkedList<String>();
+    this.pattern = pattern;
   }
 
 
   public static Flag createSwitch(String[] names) {
-    return new Flag(names, false, 0, 0, false);
+    return new Flag(names, false, 0, 0, null, false);
   }
 
 
@@ -106,6 +122,8 @@ public class Flag {
 
   /**
    * Sets the maximum/minumum allowable number of args for this flag.
+   * @param min The minimum number of arguments allowed.
+   * @param max The maximum number of arguments allowed.
    */
   public void setNumOfArgs(int min, int max) {
     this.numOfArgsMin = Math.max(0, Math.min(min, max));
@@ -176,9 +194,40 @@ public class Flag {
    *     2) The flag was not invoked and it is not required.
    */
   public boolean isValid() {
-    return (this.isSet && this.args.size() >= this.numOfArgsMin &&
-        this.args.size() <= this.numOfArgsMax) ||
-        (!this.isSet && !this.isRequired);
+    return (this.isSet && this.checkNumberOfArguments() &&
+        this.checkArgumentsPattern()) || (!this.isSet &&
+        !this.isRequired);
+  }
+
+
+  /**
+   * Checks whether the number of arguments constraints are satisfied.
+   * @return Whether the constraint is met.
+   */
+  private boolean checkNumberOfArguments() {
+    return this.args.size() >= this.numOfArgsMin &&
+        this.args.size() <= this.numOfArgsMax;
+  }
+
+
+  /**
+   * Checks whether the arguments satisfy the specified pattern. If no pattern
+   * @return Whether the constraint is met. If no pattern has been specified,
+   *     the check will succeed.
+   */
+  private boolean checkArgumentsPattern() {
+    if (this.pattern == null) {
+      return true;
+    }
+    Iterator<String> it = this.args.iterator();
+    while (it.hasNext()) {
+      String argument = it.next();
+      Matcher matcher = this.pattern.matcher(argument);
+      if (!matcher.matches()) {
+        return false;
+      }
+    }
+    return true;
   }
 
 
@@ -191,6 +240,9 @@ public class Flag {
       } else if (args.size() > this.numOfArgsMax) {
         this.errors.add(new SingleFlagParsingError(
             SingleFlagParsingError.Type.MAX_NUMBER_OF_ARGS_VIOLATION, this));
+      } else if (!this.checkArgumentsPattern()) {
+        this.errors.add(new SingleFlagParsingError(
+            SingleFlagParsingError.Type.PATTERN_VIOLATION, this));
       }
     } else if (this.isRequired) {
         this.errors.add(new SingleFlagParsingError(

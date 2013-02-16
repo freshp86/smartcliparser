@@ -21,7 +21,8 @@ public class FlagTest {
 
   @Test
   public void testConstructor() {
-    Flag flag = new Flag(new String[]{"hello", "world"}, true, 1, 5, false);
+    Flag flag = new Flag(
+        new String[]{"hello", "world"}, true, 1, 5, null, false);
     assertEquals("getNumOfArgsMin", 1, flag.getNumOfArgsMin());
     assertEquals("getNumOfArgsMax", 5, flag.getNumOfArgsMax());
     assertTrue("hasName", flag.hasName("hello"));
@@ -33,7 +34,8 @@ public class FlagTest {
 
   @Test
   public void testSetNumOfArgs() {
-    Flag flag = new Flag(new String[]{"hello", "world"}, true, 1, 5, false);
+    Flag flag = new Flag(
+        new String[]{"hello", "world"}, true, 1, 5, null, false);
 
     flag.setNumOfArgs(0, 10);
     assertEquals("getNumOfArgsMin", 0, flag.getNumOfArgsMin());
@@ -61,10 +63,12 @@ public class FlagTest {
   @Test
   public void testIsValid() {
     // Test that an optional flag is valid even when not set.
-    Flag flag1 = new Flag(new String[]{"hello", "world"}, false, 0, 5, false);
+    Flag flag1 = new Flag(
+        new String[]{"hello", "world"}, false, 0, 5, null, false);
     assertTrue(flag1.isValid());
     // Test that a required flag is not valid when it is not set.
-    Flag flag2 = new Flag(new String[]{"hello", "world"}, true, 0, 5, false);
+    Flag flag2 = new Flag(
+        new String[]{"hello", "world"}, true, 0, 5, null, false);
     assertFalse(flag2.isValid());
   }
 

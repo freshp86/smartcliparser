@@ -64,7 +64,8 @@ public abstract class CommandLineProgram {
   public CommandLineProgram() {
     this.flags = new HashSet<Flag>();
     this.flagsMap = new HashMap<String, Flag>();
-    this.unconsumed = new Flag(new String[]{"unconsumed"}, false, 0, 0, true);
+    this.unconsumed = new Flag(
+        new String[]{"unconsumed"}, false, 0, 0, null, true);
     this.registerFlag(this.unconsumed);
   }
 
@@ -76,7 +77,7 @@ public abstract class CommandLineProgram {
     this();
     initialize();
     if (!parseArgs(args)) {
-      System.out.println("Invalid use, see --help");
+      System.err.println("Invalid use, see --help");
       detectErrors();
       printErrors();
       System.exit(1);
