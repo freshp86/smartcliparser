@@ -186,15 +186,15 @@ public class Flag {
     this.errors = new LinkedList<ParsingError>();
     if (this.isSet) {
       if (this.args.size() < this.numOfArgsMin) {
-        this.errors.add(new ParsingError(
-            ParsingError.Type.MIN_NUMBER_OF_ARGS_VIOLATION, this));
+        this.errors.add(new SingleFlagParsingError(
+            SingleFlagParsingError.Type.MIN_NUMBER_OF_ARGS_VIOLATION, this));
       } else if (args.size() > this.numOfArgsMax) {
-        this.errors.add(new ParsingError(
-            ParsingError.Type.MAX_NUMBER_OF_ARGS_VIOLATION, this));
+        this.errors.add(new SingleFlagParsingError(
+            SingleFlagParsingError.Type.MAX_NUMBER_OF_ARGS_VIOLATION, this));
       }
     } else if (this.isRequired) {
-        this.errors.add(new ParsingError(
-            ParsingError.Type.REQUIRED_FLAG_NOT_SET, this));
+        this.errors.add(new SingleFlagParsingError(
+            SingleFlagParsingError.Type.REQUIRED_FLAG_NOT_SET, this));
     }
     return this.errors;
   }

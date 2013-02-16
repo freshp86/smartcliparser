@@ -91,16 +91,17 @@ public abstract class CommandLineProgram {
 
     // TODO(dpapad): Cache the result, so that this method is not called twice.
     if (!this.checkRequiredFlasSetSatisfied()) {
-      // TODO(dpapad): Create an appropriate ParsingError, need to change it so
-      // that an error can be associated with multiple flags.
-      System.err.println("Required flag set is not met");
+      this.errors.add(new MultiFlagParsingError(
+            MultiFlagParsingError.Type.REQUIRED_FLAG_SET_VIOLATION,
+            this.requiredFlagSet));
     }
 
     ListIterator<String> itArgs = this.args.listIterator();
     while (itArgs.hasNext()) {
       String arg = itArgs.next();
       if (Flag.isFlagLike(arg) && !hasFlag(Flag.extractName(arg))) {
-        this.errors.add(new ParsingError(ParsingError.Type.UNKNOWN_FLAG, arg));
+        this.errors.add(new SingleFlagParsingError(
+              SingleFlagParsingError.Type.UNKNOWN_FLAG, arg));
       }
     }
   }
