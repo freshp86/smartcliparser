@@ -17,6 +17,12 @@ package org.smartcliparser;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.regex.Pattern;
+
 public class FlagTest {
 
   @Test
@@ -29,6 +35,7 @@ public class FlagTest {
     assertTrue("hasName", flag.hasName("world"));
     assertFalse("isSet", flag.isSet());
     assertTrue("args.isEmpty", flag.args.isEmpty());
+    assertNull("pattern", flag.pattern);
   }
 
 
@@ -74,8 +81,65 @@ public class FlagTest {
 
 
   @Test
-  public void testConsume() {
-    // TODO(dpapad): Add extensive tests.
+  public void testConsume_NoPattern() {
+    Flag flag = new Flag(
+        new String[]{"hello", "world"}, true, 1, 2, null, false);
+    List<String> args = new ArrayList<String>(Arrays.asList(
+        new String[]{"arg1", "arg2", "arg3"}));
+    ListIterator<String> it = args.listIterator();
+    flag.consume(args, it);
+    // Test that the correct number of args is consumed.
+    assertArrayEquals(new String[]{"arg1", "arg2"}, flag.args.toArray());
+    // Test that the iterator has been left pointing at the correct position.
+    assertTrue(it.hasNext());
+    assertEquals("arg3", it.next());
+    // Test that the flag parsing is valid.
+    assertTrue("isValid", flag.isValid());
+  }
+
+
+  @Test
+  public void testConsume_WithPattern() {
+    Pattern pattern = Pattern.compile("^(abc|def)$");
+    Flag flag = new Flag(
+        new String[]{"hello", "world"}, true, 2, 3, pattern, false);
+
+    // Test that the flag parsing is valid when all args are following the
+    // pattern.
+    List<String> args = new ArrayList<String>(Arrays.asList(
+          new String[]{"abc", "def"}));
+    ListIterator<String> it = args.listIterator();
+    flag.consume(args, it);
+    assertTrue("isValid", flag.isValid());
+    assertTrue("errors.isEmpty", flag.getErrors().isEmpty());
+
+    // Test that an argument not following the pattern is detected.
+    args = new ArrayList<String>(Arrays.asList(new String[]{"123"}));
+    it = args.listIterator();
+    flag.consume(args, it);
+    assertFalse("isValid", flag.isValid());
+    assertEquals("errors.size", 1, flag.getErrors().size());
+    // TODO(dpapad): Assert the exact error type here, need to modify
+    // ParsingError interface.
+  }
+
+
+  @Test
+  public void testConsume_ForceConsume() {
+    String[] argsArray = new String[]{"arg1", "arg2", "arg3"};
+    Flag flag = new Flag(
+        new String[]{"hello", "world"}, true, 1, 1, null, true);
+    List<String> args = new ArrayList<String>(Arrays.asList(argsArray));
+    ListIterator<String> it = args.listIterator();
+    flag.consume(args, it);
+    // Test that all arguments are consumed, regardless of the flag's specified
+    // max number of arguments.
+    assertArrayEquals(argsArray, flag.args.toArray());
+    // Test that checking whether parsing was valid respects the flags
+    // specifications.
+    assertFalse("isValid", flag.isValid());
+    assertEquals("errors.size", 1, flag.getErrors().size());
+    // TODO(dpapad): Assert the exact error type here.
   }
 
 

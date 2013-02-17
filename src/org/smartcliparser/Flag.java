@@ -70,11 +70,6 @@ public class Flag {
    */
   public List<String> args = null;
 
-  /**
-   * A list of all errors that caused parsing of this flag to fail.
-   */
-  public List<ParsingError> errors = null;
-
 
   public Flag(String name) {
     this(new String[]{name}, false, 0, 0, null, false);
@@ -232,23 +227,23 @@ public class Flag {
 
 
   public List<ParsingError> getErrors() {
-    this.errors = new LinkedList<ParsingError>();
+    List<ParsingError> errors = new LinkedList<ParsingError>();
     if (this.isSet) {
       if (this.args.size() < this.numOfArgsMin) {
-        this.errors.add(new SingleFlagParsingError(
+        errors.add(new SingleFlagParsingError(
             SingleFlagParsingError.Type.MIN_NUMBER_OF_ARGS_VIOLATION, this));
       } else if (args.size() > this.numOfArgsMax) {
-        this.errors.add(new SingleFlagParsingError(
+        errors.add(new SingleFlagParsingError(
             SingleFlagParsingError.Type.MAX_NUMBER_OF_ARGS_VIOLATION, this));
       } else if (!this.checkArgumentsPattern()) {
-        this.errors.add(new SingleFlagParsingError(
+        errors.add(new SingleFlagParsingError(
             SingleFlagParsingError.Type.PATTERN_VIOLATION, this));
       }
     } else if (this.isRequired) {
-        this.errors.add(new SingleFlagParsingError(
+        errors.add(new SingleFlagParsingError(
             SingleFlagParsingError.Type.REQUIRED_FLAG_NOT_SET, this));
     }
-    return this.errors;
+    return errors;
   }
 
 
