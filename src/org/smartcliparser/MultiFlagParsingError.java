@@ -52,6 +52,10 @@ public class MultiFlagParsingError implements ParsingError {
   }
 
 
+  /**
+   * Extracts the names from a list of flags.
+   * @return A list consisting of the first registered name for each flag.
+   */
   private List<String> getFlagNames() {
     List<String> flagNames = new ArrayList<String>();
     Iterator<Flag> it = this.flags.iterator();

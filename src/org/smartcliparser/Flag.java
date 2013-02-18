@@ -95,21 +95,36 @@ public class Flag {
   }
 
 
+  /**
+   * Creates a flag that acts like a switch. Switch flags are not required and
+   * accpet no arguments. They are used to turn on/off a specific behavior.
+   * @return The switch flag.
+   */
   public static Flag createSwitch(String[] names) {
     return new Flag(names, false, 0, 0, null, false);
   }
 
 
+  /**
+   * Checks whether this flag was specified in the command line.
+   * @return Whether this flag was specified in the command line.
+   */
   public boolean isSet() {
     return this.isSet;
   }
 
 
+  /**
+   * @return The minimum number of arguments accepted by this flag.
+   */
   public int getNumOfArgsMin() {
     return this.numOfArgsMin;
   }
 
 
+  /**
+   * @return The maximum number of arguments accepted by this flag.
+   */
   public int getNumOfArgsMax() {
     return this.numOfArgsMax;
   }
@@ -147,15 +162,6 @@ public class Flag {
       }
     }
     return false;
-  }
-
-
-  /**
-   * Marks this flag as required or optional.
-   * @param isRequired True if this flag is required for the program to execute.
-   */
-  public void setIsRequired(boolean isRequired) {
-    this.isRequired = isRequired;
   }
 
 
@@ -226,6 +232,10 @@ public class Flag {
   }
 
 
+  /**
+   * Finds all errors that caused parsing to fail.
+   * @return A list of errors that caused parsing to fail.
+   */
   public List<ParsingError> getErrors() {
     List<ParsingError> errors = new LinkedList<ParsingError>();
     if (this.isSet) {

@@ -41,10 +41,13 @@ public class CommandLineProgramTest {
       Flag f3 = Flag.createSwitch(new String[]{"compress", "c"});
       Flag f4 = new Flag(new String[]{"filter", "f"}, false, 0,
                          Flag.UNLIMITED_NUM_OF_ARGS);
+      Flag f5 = Flag.createSwitch(new String[]{"decompress", "d"});
       registerFlag(f1);
       registerFlag(f2);
       registerFlag(f3);
       registerFlag(f4);
+      registerFlag(f5);
+      this.setRequiredFlagSet(new Flag[]{f3, f5});
     }
 
     public void run() {
@@ -74,7 +77,7 @@ public class CommandLineProgramTest {
   }
 
   @Test
-  public void testParseAllArgsSuccess() {
+  public void testParseArgs_Success() {
     String[] args = {"--output", "log.txt",
                       "-i", "input1.txt", "input2.txt",
                       "-c"};
@@ -82,8 +85,18 @@ public class CommandLineProgramTest {
     assertEquals(0, program.args.size());
   }
 
+
   @Test
-  public void testParseAllArgsFail() {
+  public void testParseArgs_RequiredFlagSetViolation() {
+    String[] args = {"--output", "log.txt",
+                      "-i", "input1.txt", "input2.txt"};
+    assertFalse(program.parseArgs(args));
+    assertEquals(0, program.args.size());
+    assertEquals("errors.size", 1, program.getErrors().size());
+  }
+
+  @Test
+  public void testParseArgs_MinArgsViolation() {
     String[] args = {"--output",
                       "-i", "input1.txt", "input2.txt",
                       "-c"};
@@ -91,7 +104,7 @@ public class CommandLineProgramTest {
   }
 
   @Test
-  public void testParseArgsUnconsumedFail1() {
+  public void testParseArgs_UnconsumedMaxArgsViolation() {
     String[] args = new String[]{"--output", "log.txt", "log2.txt",
                                  "-i", "input1.txt", "input2.txt",
                                  "-c"};
@@ -100,45 +113,39 @@ public class CommandLineProgramTest {
   }
 
   @Test
-  public void testParseArgsUnconsumedFail2() {
+  public void testParseArgs_UnknownFlagViolation() {
     String[] args = new String[]{"--output", "log.txt", "unconsumed1.txt",
                                  "-i", "input1.txt",
+                                 "-d",
                                  "-u", "unconsumed2.txt"};
     // TODO: -u stops the unconsumed args to be consumed by this.unconsumed flag
     // decide if this is alright. Decision:No. Fix this.
     program.setUnconsumedFlags(0, 2);
-    assertFalse(program.parseArgs(args));
-    assertEquals(2, program.args.size());
+    assertFalse("parseArgs", program.parseArgs(args));
+    assertEquals("errors.size", 1, program.getErrors().size());
+    assertEquals("args.size", 2, program.args.size());
   }
 
   @Test
-  public void testParseArgsUnconsumedFail3() {
-    String[] args = {"--output", "log.txt",
-                     "-i", "input1.txt", "input2.txt",
-                     "-c", "-n", "--no-such-flag"};
-    assertFalse(program.parseArgs(args));
-    assertEquals(2, program.args.size());
-  }
-
-  @Test
-  public void testParseArgsUnconsumedSuccess() {
+  public void testParseArgs_UnconsumedSuccess() {
     String[] args = new String[]{"--output", "log.txt", "unconsumed1.txt",
                                  "-i", "input1.txt", "input2.txt",
-                                 "unknown_arg"};
+                                 "-c", "unknown_arg"};
     program.setUnconsumedFlags(2, 2);
     assertTrue(program.parseArgs(args));
     assertEquals(0, program.args.size());
   }
 
   @Test
-  public void testParseArgsUnlimitedSuccess() {
+  public void testParseArgs_UnlimitedSuccess() {
     String[] args = new String[]{"--output", "log.txt",
                                  "-i", "input1.txt", "input2.txt",
+                                 "-d",
                                  "--filter", "f1", "f2", "f3", "f4", "f5"};
-    assertTrue(program.parseArgs(args));
-    assertEquals(0, program.args.size());
+    assertTrue("parseArgs", program.parseArgs(args));
+    assertEquals("args.size", 0, program.args.size());
     Flag filterFlag = program.flagsMap.get("filter");
-    assertEquals(5, filterFlag.args.size());
+    assertEquals("filterFlag.args.size", 5, filterFlag.args.size());
   }
 
   @Test

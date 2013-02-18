@@ -52,11 +52,6 @@ public abstract class CommandLineProgram {
    */
   public List<String> args;
 
-  /**
-   * A list of all the errors that occured while parsing.
-   */
-  public List<ParsingError> errors;
-
 
   /**
    * Creates an instance without parsing any args.
@@ -76,10 +71,9 @@ public abstract class CommandLineProgram {
   public CommandLineProgram(String[] args) {
     this();
     initialize();
-    if (!parseArgs(args)) {
+    if (!this.parseArgs(args)) {
       System.err.println("Invalid use, see --help");
-      detectErrors();
-      printErrors();
+      CommandLineProgram.printErrors(this.getErrors());
       System.exit(1);
     } else {
       run();
@@ -87,16 +81,16 @@ public abstract class CommandLineProgram {
   }
 
 
-  public void detectErrors() {
-    this.errors = new LinkedList<ParsingError>();
+  public List<ParsingError> getErrors() {
+    List<ParsingError> errors = new LinkedList<ParsingError>();
     Iterator<Flag> it = this.flags.iterator();
     while (it.hasNext()) {
-      this.errors.addAll(it.next().getErrors());
+      errors.addAll(it.next().getErrors());
     }
 
     // TODO(dpapad): Cache the result, so that this method is not called twice.
-    if (!this.checkRequiredFlasSetSatisfied()) {
-      this.errors.add(new MultiFlagParsingError(
+    if (!this.checkRequiredFlagSetSatisfied()) {
+      errors.add(new MultiFlagParsingError(
           MultiFlagParsingError.Type.REQUIRED_FLAG_SET_VIOLATION,
           this.requiredFlagSet));
     }
@@ -105,17 +99,18 @@ public abstract class CommandLineProgram {
     while (itArgs.hasNext()) {
       String arg = itArgs.next();
       if (Flag.isFlagLike(arg) && !hasFlag(Flag.extractName(arg))) {
-        this.errors.add(new SingleFlagParsingError(
+        errors.add(new SingleFlagParsingError(
               SingleFlagParsingError.Type.UNKNOWN_FLAG, arg));
       }
     }
+    return errors;
   }
 
 
-  public void printErrors() {
-    Iterator<ParsingError> errorsIterator = this.errors.iterator();
-    while (errorsIterator.hasNext()) {
-      System.err.println(errorsIterator.next().toString());
+  public static void printErrors(List<ParsingError> errors) {
+    Iterator<ParsingError> it = errors.iterator();
+    while (it.hasNext()) {
+      System.err.println(it.next().toString());
     }
   }
 
@@ -197,7 +192,7 @@ public abstract class CommandLineProgram {
     }
     // TODO: consume again here until only uknown flags exist in this.args.
 
-    return isParsingValid();
+    return this.isParsingValid();
   }
 
 
@@ -214,7 +209,7 @@ public abstract class CommandLineProgram {
       }
     }
 
-    if (!this.checkRequiredFlasSetSatisfied()) {
+    if (!this.checkRequiredFlagSetSatisfied()) {
       return false;
     }
 
@@ -234,7 +229,7 @@ public abstract class CommandLineProgram {
    * actually set.
    * @return True if the required flag set constraint is met.
    */
-  public boolean checkRequiredFlasSetSatisfied() {
+  public boolean checkRequiredFlagSetSatisfied() {
     if (this.requiredFlagSet == null) {
       return true;
     }

@@ -14,8 +14,13 @@
 */
 package org.smartcliparser;
 
+/**
+ * An interface to be implemented by all classes representing a parsing error.
+ */
 public interface ParsingError {
-
+  /**
+   * @return A description about the error, to be written to stderr.
+   */
   String getDescription();
 
 }  // interface ParsingError

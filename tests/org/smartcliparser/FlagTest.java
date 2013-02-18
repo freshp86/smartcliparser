@@ -40,6 +40,17 @@ public class FlagTest {
 
 
   @Test
+  public void testHasName() {
+    Flag flag = new Flag(
+        new String[]{"hello", "world"}, true, 1, 5, null, false);
+    assertTrue("hasName", flag.hasName("hello"));
+    assertTrue("hasName", flag.hasName("world"));
+    assertFalse("hasName", flag.hasName("helloworld"));
+    assertFalse("hasName", flag.hasName(""));
+  }
+
+
+  @Test
   public void testSetNumOfArgs() {
     Flag flag = new Flag(
         new String[]{"hello", "world"}, true, 1, 5, null, false);
@@ -73,10 +84,25 @@ public class FlagTest {
     Flag flag1 = new Flag(
         new String[]{"hello", "world"}, false, 0, 5, null, false);
     assertTrue(flag1.isValid());
+    assertEquals("errors.size", 0, flag1.getErrors().size());
     // Test that a required flag is not valid when it is not set.
     Flag flag2 = new Flag(
         new String[]{"hello", "world"}, true, 0, 5, null, false);
     assertFalse(flag2.isValid());
+    assertEquals("errors.size", 1, flag2.getErrors().size());
+  }
+
+
+  @Test
+  public void testConsume_MinArgViolation() {
+    Flag flag = new Flag(
+        new String[]{"hello", "world"}, true, 2, 2, null, false);
+    List<String> args = new ArrayList<String>(Arrays.asList(
+          new String[]{"arg1"}));
+    ListIterator<String> it = args.listIterator();
+    flag.consume(args, it);
+    assertFalse("isValid", flag.isValid());
+    assertEquals("errors.size", 1, flag.getErrors().size());
   }
 
 
@@ -95,6 +121,7 @@ public class FlagTest {
     assertEquals("arg3", it.next());
     // Test that the flag parsing is valid.
     assertTrue("isValid", flag.isValid());
+    assertEquals("errors.size", 0, flag.getErrors().size());
   }
 
 
