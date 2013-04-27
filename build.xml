@@ -89,7 +89,13 @@
 
   <!--- Test targets -->
 
-  <target name="junit" depends="compile_tests">
+  <target name="copy_test_resources">
+    <copy todir="${tests.classes.dir}">
+      <fileset dir="${tests.src.dir}" excludes="**/*.java"/>
+    </copy>
+  </target>
+
+  <target name="junit" depends="copy_test_resources, compile_tests">
     <junit printsummary="no">
       <classpath>
         <path location="${classes.dir}"/>

@@ -31,17 +31,12 @@ public class FileSetFlag extends Flag {
   }
 
 
-  public Collection<File> getFileSet() {
-    Collection<File> inputFiles = null;
+  public Collection<File> getFileSet() throws FileNotFoundException {
+    return FileIOUtilities.getFileSet(this.args);
+  }
 
-    try {
-      inputFiles = FileIOUtilities.getFileSet(this.args);
-    } catch (FileNotFoundException e) {
-      System.err.println("Error: Input file " + e.getMessage() +
-          " does not exist.");
-      System.exit(1);
-    }
-
+  public Collection<File> getTextFileSet() throws FileNotFoundException {
+    Collection<File> inputFiles = this.getFileSet();
     return TextIOUtilities.getTextFiles(inputFiles);
   }
 
