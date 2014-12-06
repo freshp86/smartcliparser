@@ -1,0 +1,38 @@
+ext {
+
+  // Top-level tracked forders ----------------------------------------------------
+  srcDir       = "src"
+  testsDir     = "tests"
+  testingDir   = "testing"
+  resourcesDir = "resources"
+
+  srcResourcesDir = "${srcDir}/resources"
+  testsResourcesDir = "${testsDir}/resources"
+
+  // External dependencies -------------------------------------------------------
+  libDir       = "lib"
+
+  // Generated folders -----------------------------------------------------------
+  binDir       = "bin"
+  docDir       = "doc"
+  coverageDir  = "coverage"
+  reportsDir   = "reports"
+
+  // Overriding gradle's default buildDir.
+  project.buildDir     = "${binDir}"
+
+  // Source related.
+  binSrcClassesDir          = "${binDir}/srcClasses"
+  binSrcClassesResourcesDir = "${binSrcClassesDir}/resources"
+  binJarDir                 = "${binDir}/jar"
+
+  // Tests related.
+  binTestingClassesDir  = "${binDir}/testingClasses"
+  binTestsClassesDir    = "${binDir}/testsClasses"
+  binTestsResourcesDir  = "${binTestsClassesDir}/resources"
+
+  // Third party tools.
+  jacocoDir     = "../../programs/jacoco-0.6.1.201212231917/lib/"
+  checkstyleDir = "../../programs/checkstyle-5.6"
+  scalaDir =      "../../programs/scala-2.10.1/lib/"
+}

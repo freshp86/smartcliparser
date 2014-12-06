@@ -37,7 +37,7 @@ public class FileSetFlagTest {
     flag = new FileSetFlag(new String[]{"input", "i"}, true, 1, 1);
 
     List<String> args = new ArrayList<String>(Arrays.asList(
-          new String[]{"bin/tests/classes/resources/test_folder"}));
+          new String[]{"bin/testsClasses/resources/test_folder"}));
     ListIterator<String> it = args.listIterator();
     flag.consume(args, it);
   }

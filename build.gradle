@@ -1,0 +1,91 @@
+apply plugin: 'java'
+apply plugin: 'checkstyle'
+apply plugin: 'jacoco'
+
+apply from: 'build/vars.gradle'
+
+sourceSets.main.java.srcDirs = ["$project.srcDir"]
+sourceSets.main.output.classesDir = file("$project.binSrcClassesDir")
+sourceSets.main.output.resourcesDir = "$project.binSrcClassesResourcesDir"
+sourceSets.main.resources.srcDirs = ["$project.srcResourcesDir"]
+
+sourceSets.test.java.srcDirs = ["$project.testsDir", "$project.testingDir"]
+sourceSets.test.output.classesDir = file("$project.binTestsClassesDir")
+sourceSets.test.output.resourcesDir = "$project.binTestsResourcesDir"
+sourceSets.test.resources.srcDirs = ["$project.testsResourcesDir"]
+
+
+task showProperties << {
+  println "$sourceSets.test.output.resourcesDir"
+  println "$project.checkstyle.configFile"
+  println "$project.configurations.checkstyle"
+
+}
+
+// Modifying tasks already defined by javaPlugin.
+
+clean {
+  FileCollection toDelete = files(
+      "$project.binDir",
+      "$project.coverageDir",
+      "$project.docDir",
+      "$project.reportsDir",
+      "jacoco.exec")
+
+  delete(toDelete)
+}
+
+repositories {
+  mavenCentral()
+}
+
+
+dependencies {
+  compile(
+      fileTree("$project.libDir"))
+  testCompile 'junit:junit:4.11'
+}
+
+
+jar {
+  destinationDir = file("$project.binJarDir")
+  includeEmptyDirs = false
+  baseName = "smart-cli-parser"
+  appendix = "nightly"
+  version = "1.0"
+
+  manifest {
+    attributes 'Built-By': 'freshp',
+               'Implementation-Version': version
+  }
+}
+
+javadoc {
+  options.links "http://docs.oracle.com/javase/6/docs/api/"
+}
+
+test {
+  testLogging {
+     // Show that tests are run in the command-line output.
+     events 'passed', 'failed'
+     // Display more information when a test fails.
+     exceptionFormat 'full'
+  }
+}
+
+checkstyle {
+  configFile = file("build/style_checks.xml")
+}
+
+// Tasks related to code coverage calculation.
+jacoco {
+    toolVersion = "0.7.2.201409121644"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${project.binDir}/coverage"
+    }
+}
