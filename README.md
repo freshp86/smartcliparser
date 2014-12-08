@@ -1,12 +1,12 @@
 # smart-cli-parser
 
-smart-cli-parser is a powerful, flexible and easy-to-use Java command line
-parser.
+smart-cli-parser is a powerful, flexible and easy-to-use command line parser for
+Java.
 
 # Building and development instructions.
 
-Gradle version 2,10+ is needed for building the executable. Once you checkout
-the code, navigate to the top folder and execute one of the followirng commands.
+Gradle version 2.1+ is needed for building the executable. Once you checkout
+the code, navigate to the top folder and execute one of the following commands.
 
  * `gradle compileJava`: Creates all .class files corresponding to `src/`.
  * `gradle compileTests`: Creates all .class files corresponding to `tests/`.
